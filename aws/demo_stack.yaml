@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A dev stack for the demo localstack application
+Resources:
+    S3Bucket:
+        Type: AWS::S3::Bucket
+        Properties:
+          AccessControl: PublicRead
+          BucketName: demobucket
+    DemoSecret:
+        Type: 'AWS::SecretsManager::Secret'
+        Properties:
+            Name: DemoSecret
+            Description: "This is the devorg secret."
+            GenerateSecretString:
+            SecretStringTemplate: '{"username": "demo"}'
+            GenerateStringKey: "password"
+            PasswordLength: 30
+            ExcludeCharacters: '"@/\'
+            Tags:
+            -
+                Key: AppName
+                Value: demo_localstack_application
