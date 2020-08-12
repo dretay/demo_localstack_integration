@@ -63,6 +63,7 @@ services:
       - AWS_REGION=us-east-2
       - AWS_ACCESS_KEY_ID=0000
       - AWS_SECRET_ACCESS_KEY=0000
+      - LOCALSTACK_HOST=localstack
   
   demo_localstack_app:      
     container_name: demo_localstack_app
