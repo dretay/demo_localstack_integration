@@ -27,4 +27,5 @@ cd helloworld
 sls invoke local -f hello
 sls deploy --stage local
 sls invoke --stage local -f hello
+awslocal lambda list-functions
 ```
