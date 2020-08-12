@@ -12,7 +12,8 @@ Spin up the stack
 ```console
 git submodule init
 git submodule update
-UID=${UID} docker-compose build
+export UID=$UID
+docker-compose build
 docker-compose up
 ```
 Then connect to the lambda sdk container
