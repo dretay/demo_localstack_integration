@@ -1,7 +1,7 @@
 https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04
 https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04
 UID=${UID} docker-compose build
-docker-compose exec serverless /bin/bash
+docker-compose exec demo_localstack_serverless /bin/bash
 
 sls create -t aws-nodejs -p helloworld -n helloworld
 cd helloworld
