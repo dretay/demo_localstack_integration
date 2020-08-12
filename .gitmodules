@@ -1,0 +1,3 @@
+[submodule "demo_localstack_app"]
+	path = demo_localstack_app
+	url = git@github.com:dretay/demo_localstack_app.git

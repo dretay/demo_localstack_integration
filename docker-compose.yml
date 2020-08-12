@@ -8,7 +8,7 @@ services:
       - "4566-4599:4566-4599"
     environment:
       - DEFAULT_REGION=us-east-2
-      - SERVICES=apigateway,cloudformation,cloudwatch,iam,s3,secretsmanager
+      - SERVICES=apigateway,cloudformation,cloudwatch,lambda,iam,s3,sns,secretsmanager,sts
       - DEBUG=1
       - LAMBDA_EXECUTOR=docker
       - DOCKER_HOST=unix:///var/run/docker.sock
@@ -17,9 +17,7 @@ services:
     volumes:
       - ./aws:/docker-entrypoint-initaws.d
       - './.localstack:/tmp/localstack'
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    # tmpfs:
-    #   - /tmp/localstack:exec,mode=600
+      - "/var/run/docker.sock:/var/run/docker.sock"    
     healthcheck:
       test:
         - CMD
@@ -42,18 +40,47 @@ services:
     volumes:
       - ./.postgres/db_data:/var/lib/postgresql/data
       - ./psql/init.sql:/docker-entrypoint-initdb.d/init.sql
-  # demo_localstack_app:
-  #   build: './demo_localstack_app'
-  #   image: "demo_localstack_app:latest"
-  #   container_name: demo_localstack_app
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - localstack
-  #     - postgres
-  #   environment:
-  #     - PORT=3000
-  #     - AWS_REGION=us-east-2
-  #     - AWS_ACCESS_KEY_ID=0000
-  #     - AWS_SECRET_ACCESS_KEY=0000
-  #   command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 10s npm start"
+  
+  serverless:
+    user: "${USER}:${USER}"
+    build:
+      context: ./serverless
+      dockerfile: Dockerfile
+      args:
+        - RUNUSER=${USER}
+        - RUNUID=${UID}        
+    tty: true
+    stdin_open: true
+    depends_on:
+      - localstack
+      - postgres
+    image: serverless
+    working_dir: /app
+    volumes:
+      - ./serverless:/app
+    container_name: serverless
+    environment:      
+      - AWS_REGION=us-east-2
+      - AWS_ACCESS_KEY_ID=0000
+      - AWS_SECRET_ACCESS_KEY=0000
+  
+  demo_localstack_app:      
+    container_name: demo_localstack_app
+    build:
+      context: ./demo_localstack_app
+      dockerfile: Dockerfile
+    volumes:
+      - './demo_localstack_app:/app'
+      - '/app/node_modules'
+    ports:
+      - 3001:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - AWS_REGION=us-east-2
+      - AWS_ACCESS_KEY_ID=0000
+      - AWS_SECRET_ACCESS_KEY=0000
+    stdin_open: true
+    depends_on:
+      - localstack
+      - postgres
+    command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 10s npm start"
