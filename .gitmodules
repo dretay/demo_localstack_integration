@@ -1,0 +1,8 @@
+[submodule "demo_localstack_app"]
+	path = demo_localstack_app
+	url = git@github.com:dretay/demo_localstack_app.git
+	branch = master
+[submodule "demo_localstack_serverless"]
+	path = demo_localstack_serverless
+	url = git@github.com:dretay/demo_localstack_serverless
+	branch = master
