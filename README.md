@@ -11,7 +11,7 @@ A demo localstack integration showing a sample nodejs application and lambda dev
 Spin up the stack
 ```console
 git submodule init
-git submodule update
+git submodule update --remote
 export UID=$UID
 docker-compose build
 docker-compose up
