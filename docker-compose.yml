@@ -17,7 +17,7 @@ services:
     volumes:
       - ./aws:/docker-entrypoint-initaws.d
       - './.localstack:/tmp/localstack'
-      - "/var/run/docker.sock:/var/run/docker.sock"    
+      - "/var/run/docker.sock:/var/run/docker.sock"
     healthcheck:
       test:
         - CMD
@@ -40,7 +40,7 @@ services:
     volumes:
       - ./.postgres/db_data:/var/lib/postgresql/data
       - ./psql/init.sql:/docker-entrypoint-initdb.d/init.sql
-  
+
   demo_localstack_serverless:
     user: "${USER}:${USER}"
     build:
@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile
       args:
         - RUNUSER=${USER}
-        - RUNUID=${UID}        
+        - RUNUID=${UID}
     tty: true
     stdin_open: true
     depends_on:
@@ -59,13 +59,13 @@ services:
     volumes:
       - ./demo_localstack_serverless:/app
     container_name: demo_localstack_serverless
-    environment:      
+    environment:
       - AWS_REGION=us-east-2
       - AWS_ACCESS_KEY_ID=0000
       - AWS_SECRET_ACCESS_KEY=0000
       - LOCALSTACK_HOST=localstack
-  
-  demo_localstack_app:      
+
+  demo_localstack_app:
     container_name: demo_localstack_app
     build:
       context: ./demo_localstack_app
