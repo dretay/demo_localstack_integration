@@ -1,3 +1,0 @@
-[submodule "demo_localstack_serverless"]
-	path = demo_localstack_serverless
-	url = git@github.com:dretay/demo_localstack_serverless.git
