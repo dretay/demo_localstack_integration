@@ -66,10 +66,14 @@ services:
       - LOCALSTACK_HOST=localstack
 
   demo_localstack_app:
+    user: "node"
     container_name: demo_localstack_app
     build:
       context: ./demo_localstack_app
       dockerfile: Dockerfile
+      args:
+        - RUNUSER=${USER}
+        - RUNUID=${UID}
     volumes:
       - './demo_localstack_app:/app'
       - '/app/node_modules'
