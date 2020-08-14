@@ -29,3 +29,7 @@ sls deploy --stage local
 sls invoke --stage local -f hello
 awslocal lambda list-functions
 ```
+You can connect to the node container like this
+```console
+docker-compose exec demo_localstack_app /bin/sh
+```

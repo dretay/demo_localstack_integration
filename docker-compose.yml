@@ -66,7 +66,7 @@ services:
       - LOCALSTACK_HOST=localstack
 
   demo_localstack_app:
-    user: "node"
+    user: node
     stdin_open: true
     build:
       context: './demo_localstack_app'
@@ -90,3 +90,29 @@ services:
       - AWS_ACCESS_KEY_ID=0000
       - AWS_SECRET_ACCESS_KEY=0000
     command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 1s npm start"
+  demo_localstack_api:
+    user: node
+    stdin_open: true
+    build:
+      context: './demo_localstack_api'
+      dockerfile: Dockerfile
+      args:
+        - RUNUSER=${USER}
+        - RUNUID=${UID}
+    image: "demo_localstack_api:latest"
+    container_name: demo_localstack_api
+    ports:
+      - "3001:3000"
+    volumes:
+      - './demo_localstack_api:/bin/www'
+      - '/bin/www/node_modules'
+    depends_on:
+      - localstack
+      - postgres
+    environment:
+      - PORT=3000
+      - AWS_REGION=us-east-2
+      - AWS_ACCESS_KEY_ID=0000
+      - AWS_SECRET_ACCESS_KEY=0000
+    command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 1s npm start"
+    
