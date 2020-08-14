@@ -6,3 +6,7 @@
 	path = demo_localstack_serverless
 	url = git@github.com:dretay/demo_localstack_serverless
 	branch = master
+[submodule "demo_localstack_api"]
+	path = demo_localstack_api
+	url = git@github.com:dretay/demo_localstack_api.git
+	branch = master
