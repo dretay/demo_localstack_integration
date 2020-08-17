@@ -1,5 +1,9 @@
-version: '3.8'
+version: "3.8"
 
+networks:
+  default:
+    external:
+      name: localstack-demo
 services:
   localstack:
     container_name: localstack
@@ -8,15 +12,17 @@ services:
       - "4566-4599:4566-4599"
     environment:
       - DEFAULT_REGION=us-east-2
-      - SERVICES=apigateway,cloudformation,cloudwatch,lambda,iam,s3,sns,secretsmanager,sts
+      - SERVICES=apigateway,cloudformation,cloudwatch,dynamodb,dynamodbstreams,lambda,iam,s3,sns,secretsmanager,sts
       - DEBUG=1
       - LAMBDA_EXECUTOR=docker
       - DOCKER_HOST=unix:///var/run/docker.sock
       - DATA_DIR=/tmp/localstack/data
       - HOST_TMP_FOLDER=/tmp/localstack
+      - LOCALSTACK_HOSTNAME=${LOCALSTACK_HOSTNAME- }
+      - LAMBDA_DOCKER_NETWORK=localstack-demo
     volumes:
       - ./aws:/docker-entrypoint-initaws.d
-      - './.localstack:/tmp/localstack'
+      - "./.localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
     healthcheck:
       test:
@@ -69,7 +75,7 @@ services:
     user: node
     stdin_open: true
     build:
-      context: './demo_localstack_app'
+      context: "./demo_localstack_app"
       dockerfile: Dockerfile
       args:
         - RUNUSER=${USER}
@@ -79,8 +85,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - './demo_localstack_app:/bin/www'
-      - '/bin/www/node_modules'
+      - "./demo_localstack_app:/bin/www"
+      - "/bin/www/node_modules"
     depends_on:
       - localstack
       - postgres
@@ -91,28 +97,23 @@ services:
       - AWS_SECRET_ACCESS_KEY=0000
     command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 1s npm start"
   demo_localstack_api:
-    user: node
+    user: "node"
     stdin_open: true
     build:
-      context: './demo_localstack_api'
+      context: "./demo_localstack_api"
       dockerfile: Dockerfile
       args:
         - RUNUSER=${USER}
         - RUNUID=${UID}
+        - PORT=3000
     image: "demo_localstack_api:latest"
     container_name: demo_localstack_api
     ports:
       - "3001:3000"
     volumes:
-      - './demo_localstack_api:/bin/www'
-      - '/bin/www/node_modules'
+      - "./demo_localstack_api:/bin/www"
+      - "/bin/www/node_modules"
     depends_on:
-      - localstack
+      # - localstack
       - postgres
-    environment:
-      - PORT=3000
-      - AWS_REGION=us-east-2
-      - AWS_ACCESS_KEY_ID=0000
-      - AWS_SECRET_ACCESS_KEY=0000
-    command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 1s npm start"
-    
+    command: sh -c "dockerize -wait tcp://postgres:5432 -wait http://localstack:4572 -timeout 60s -wait-retry-interval 1s npm run dev"
